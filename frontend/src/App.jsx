@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import CanvasImage from "./components/CanvasImageNoise";
+import CanvasImageEffects from "./components/CanvasImageEffects";
 import { searchWikimediaImages, getFallbackImages } from "./utils/ImageSearch";
 
 const App = () => {
