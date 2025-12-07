@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CanvasImageEffects from "./components/CanvasImageEffects";
 import { searchWikimediaImages, getFallbackImages } from "./utils/ImageSearch";
+import { Toaster, toast } from "react-hot-toast";
 
 const App = () => {
   const [noiseScale, setNoiseScale] = useState(0.0);
@@ -14,10 +15,15 @@ const App = () => {
   // Search for images
   const handleSearch = async (e) => {
     e?.preventDefault();
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      toast.error("Please enter a search query");
+      return;
+    }
 
     setIsLoading(true);
     setUseFallback(false);
+
+    const loadingToast = toast.loading(`Searching for "${searchQuery}"...`);
 
     try {
       const imageUrls = await searchWikimediaImages(searchQuery, 0);
@@ -25,12 +31,18 @@ const App = () => {
       if (imageUrls.length > 0) {
         setImages(imageUrls);
         setSelectedImage(imageUrls[0]);
+        toast.success(`Found ${imageUrls.length} images`, {
+          id: loadingToast,
+        });
       } else {
         // Use fallback images if no results found
         const fallbackImages = getFallbackImages(searchQuery);
         setImages(fallbackImages);
         setUseFallback(true);
         setSelectedImage(fallbackImages[0] || null);
+        toast.warning("No images found. Showing demo images", {
+          id: loadingToast,
+        });
       }
     } catch (error) {
       console.error("Search error:", error);
@@ -39,6 +51,9 @@ const App = () => {
       setImages(fallbackImages);
       setUseFallback(true);
       setSelectedImage(fallbackImages[0] || null);
+      toast.error("Search failed. Showing demo images", {
+        id: loadingToast,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -47,10 +62,24 @@ const App = () => {
   // Handle image selection from thumbnails
   const handleImageSelect = (img) => {
     setSelectedImage(img);
+    toast.success("Image selected", {
+      duration: 1500,
+      position: "bottom-right",
+    });
+  };
   };
 
   return (
     <div className="min-h-screen bg-base-300 p-4">
+      {/* Toaster */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+        }}
+      />
+
+      {/* Header */}
       <div className="container mx-auto max-w-7xl">
         <h1 className="text-3xl font-bold text-center mb-6">
           Noise Texture Generator
@@ -77,10 +106,12 @@ const App = () => {
                     max="0.1"
                     step="0.001"
                     value={noiseScale}
-                    onChange={(e) => setNoiseScale(parseFloat(e.target.value))}
-                    className="range range-primary"
                     onChange={(e) => {
                       setNoiseScale(parseFloat(e.target.value));
+                      if (parseFloat(e.target.value) === 0) {
+                        toast("Noise disabled", {
+                          icon: "??",
+                        });
                       }
                     }}
                     className="range range-accent"
@@ -132,7 +163,12 @@ const App = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search images..."
-                    className="input input-bordered w-full"
+                    className="input input-bordered w-full px-4"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && searchQuery.trim()) {
+                        toast.loading(`Searching for "${searchQuery}"...`);
+                      }
+                    }}
                   />
                   <button
                     type="submit"
@@ -164,7 +200,6 @@ const App = () => {
             </div>
           </div>
 
-          {/* Main Content Area */}
           {/* Right Column */}
           <div className="lg:col-span-9 space-y-4">
             {/* Image Display */}
@@ -203,12 +238,13 @@ const App = () => {
                     {images.map((img, index) => (
                       <div
                         key={index}
-                        className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                        className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all hover:scale-100 ${
                           selectedImage === img
                             ? "border-primary shadow-lg"
                             : "border-base-300 hover:border-primary"
                         }`}
                         onClick={() => handleImageSelect(img)}
+                        title={`Image ${index + 1}`}
                       >
                         <img
                           src={img}
@@ -219,6 +255,9 @@ const App = () => {
                             e.target.src = `https://via.placeholder.com/200x128/1f2937/9ca3af?text=${
                               index + 1
                             }`;
+                            toast.error(`Failed to load image ${index + 1}`, {
+                              duration: 2000,
+                            });
                           }}
                         />
                       </div>
