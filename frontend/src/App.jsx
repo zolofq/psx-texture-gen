@@ -332,12 +332,15 @@ const App = () => {
                           className="w-full h-32 object-cover"
                           loading="lazy"
                           onError={(e) => {
-                            e.target.src = `https://via.placeholder.com/200x128/1f2937/9ca3af?text=${
-                              index + 1
-                            }`;
-                            toast.error(`Failed to load image ${index + 1}`, {
-                              duration: 2000,
-                            });
+                            const target = e.target;
+                            if (!target.src.includes("via.placeholder.com")) {
+                              target.src = `https://via.placeholder.com/200x128/1f2937/9ca3af?text=${
+                                index + 1
+                              }`;
+                              toast.error(`Failed to load image ${index + 1}`, {
+                                duration: 2000,
+                              });
+                            }
                           }}
                         />
                       </div>

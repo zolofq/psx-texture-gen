@@ -136,7 +136,6 @@ export const getFallbackImages = (query) => {
     nature: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Shaqi_jrvej.jpg/800px-Shaqi_jrvej.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Machu_Picchu%2C_Peru.jpg/800px-Machu_Picchu%2C_Peru.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/La_Tour_Eiffel_vue_de_la_Tour_Saint-Jacques%2C_Paris_ao%C3%BBt_2014_%282%29.jpg/800px-La_Tour_Eiffel_vue_de_la_Tour_Saint-Jacques%2C_Paris_ao%C3%BBt_2014_%282%29.jpg",
     ],
     cat: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/800px-Cat03.jpg",
@@ -145,13 +144,10 @@ export const getFallbackImages = (query) => {
     ],
     city: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/New_york_times_square-terabass.jpg/800px-New_york_times_square-terabass.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Tokyo_Sky_Tree_2012.JPG/800px-Tokyo_Sky_Tree_2012.JPG",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/London_Eye_at_night_%28cropped%29.jpg/800px-London_Eye_at_night_%28cropped%29.jpg",
     ],
     default: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Tabby_cat_with_blue_eyes-3336579.jpg/800px-Tabby_cat_with_blue_eyes-3336579.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Gull_portrait_ca_usa.jpg/800px-Gull_portrait_ca_usa.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Sunflower_sky_backdrop.jpg/800px-Sunflower_sky_backdrop.jpg",
     ],
   };
 
