@@ -7,6 +7,9 @@ const CanvasImageEffects = ({
   pixelSize,
   maxWidth,
   maxHeight,
+  dithering = false,
+  ditherDepth = 32,
+  ditherIntensity = 1.0, // 0.0 to 1.0
 }) => {
   const canvasRef = useRef(null);
   const noise2D = createNoise2D();
@@ -33,6 +36,11 @@ const CanvasImageEffects = ({
         ctx.drawImage(img, 0, 0, width, height);
       }
 
+      // Apply dithering
+      if (dithering && ditherDepth > 0) {
+        applyColorDithering(ctx, width, height, ditherDepth, ditherIntensity);
+      }
+
       // Apply noise on top
       if (noiseScale && noiseScale > 0) {
         applyNoise(ctx, width, height, noiseScale);
@@ -42,7 +50,16 @@ const CanvasImageEffects = ({
     img.onerror = () => {
       console.error("Failed to load image");
     };
-  }, [src, noiseScale, noiseOpacity, pixelSize, maxWidth, maxHeight]);
+  }, [
+    src,
+    noiseScale,
+    pixelSize,
+    maxWidth,
+    maxHeight,
+    dithering,
+    ditherDepth,
+    ditherIntensity,
+  ]);
 
   const calculateDimensions = (img, maxWidth, maxHeight) => {
     let width = img.width;
@@ -85,7 +102,59 @@ const CanvasImageEffects = ({
     ctx.drawImage(canvasRef.current, 0, 0, w, h, 0, 0, width, height);
   };
 
-  const applyNoise = (ctx, width, height, noiseScale, noiseOpacity) => {
+  const applyColorDithering = (ctx, width, height, depth, intensity) => {
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+
+    // Larger bayer matrix for smoother color dithering
+    const bayerMatrix8x8 = [
+      [0, 32, 8, 40, 2, 34, 10, 42],
+      [48, 16, 56, 24, 50, 18, 58, 26],
+      [12, 44, 4, 36, 14, 46, 6, 38],
+      [60, 28, 52, 20, 62, 30, 54, 22],
+      [3, 35, 11, 43, 1, 33, 9, 41],
+      [51, 19, 59, 27, 49, 17, 57, 25],
+      [15, 47, 7, 39, 13, 45, 5, 37],
+      [63, 31, 55, 23, 61, 29, 53, 21],
+    ];
+
+    // Normalize depth (smaller value = fewer colors)
+    const levels = Math.max(2, Math.min(256, depth));
+    const step = 255 / (levels - 1);
+    const intensityFactor = Math.max(0, Math.min(1, intensity));
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const pixelIndex = (y * width + x) * 4;
+
+        // Get bayer matrix value (0-63) and normalize to -0.5 to 0.5
+        const bayerValue = bayerMatrix8x8[x % 8][y % 8];
+        const normalizedBayer = (bayerValue / 64 - 0.5) * intensityFactor;
+
+        // Apply dithering to each color channel separately
+        for (let channel = 0; channel < 3; channel++) {
+          const originalValue = data[pixelIndex + channel];
+
+          // Add dithering noise
+          let ditheredValue = originalValue + normalizedBayer * step;
+
+          // Quantize to nearest level
+          ditheredValue = Math.round(ditheredValue / step) * step;
+
+          // Clamp to 0-255 range
+          data[pixelIndex + channel] = Math.max(
+            0,
+            Math.min(255, ditheredValue)
+          );
+        }
+        // Alpha channel remains unchanged
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+  };
+
+  const applyNoise = (ctx, width, height, noiseScale) => {
     const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
 

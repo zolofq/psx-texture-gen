@@ -11,6 +11,9 @@ const App = () => {
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [useFallback, setUseFallback] = useState(false);
+  const [dithering, setDithering] = useState(false);
+  const [ditherDepth, setDitherDepth] = useState(32);
+  const [ditherIntensity, setDitherIntensity] = useState(1.0);
 
   // Search for images
   const handleSearch = async (e) => {
@@ -104,6 +107,7 @@ const App = () => {
                 onClick={() => {
                   setNoiseScale(0.0);
                   setPixelSize(10);
+                  setDithering(false);
                   toast.success("Settings reset", {
                     duration: 1500,
                   });
@@ -188,6 +192,88 @@ const App = () => {
                   <span>Max</span>
                   <span>Original</span>
                 </div>
+              </div>
+            </div>
+
+            {/* Dithering Control Card */}
+            <div className="card bg-base-200 shadow-xl">
+              <div className="card-body p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="card-title text-lg">Dithering</h2>
+                  <label className="cursor-pointer flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={dithering}
+                      onChange={(e) => {
+                        setDithering(e.target.checked);
+                        if (e.target.checked) {
+                          toast.success("Dithering enabled", {
+                            duration: 1500,
+                            icon: "🎨",
+                          });
+                        }
+                      }}
+                      className="toggle toggle-primary"
+                    />
+                    <span className="text-sm font-medium">
+                      {dithering ? "ON" : "OFF"}
+                    </span>
+                  </label>
+                </div>
+
+                {dithering && (
+                  <div className="space-y-4 mt-2">
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text">Color Depth</span>
+                        <span className="badge badge-neutral">
+                          {ditherDepth}
+                        </span>
+                      </label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="64"
+                        step="1"
+                        value={ditherDepth}
+                        onChange={(e) => {
+                          setDitherDepth(parseInt(e.target.value));
+                        }}
+                        className="range range-secondary"
+                        disabled={!dithering}
+                      />
+                      <div className="flex justify-between text-xs px-2 mt-1">
+                        <span>1 colors</span>
+                        <span>64 colors</span>
+                      </div>
+                    </div>
+
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text">Intensity</span>
+                        <span className="badge badge-neutral">
+                          {ditherIntensity.toFixed(2)}
+                        </span>
+                      </label>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="2.0"
+                        step="0.1"
+                        value={ditherIntensity}
+                        onChange={(e) => {
+                          setDitherIntensity(parseFloat(e.target.value));
+                        }}
+                        className="range range-secondary"
+                        disabled={!dithering}
+                      />
+                      <div className="flex justify-between text-xs px-2 mt-1">
+                        <span>Subtle</span>
+                        <span>Strong</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -281,6 +367,9 @@ const App = () => {
                         pixelSize={pixelSize}
                         maxWidth={500}
                         maxHeight={500}
+                        dithering={dithering}
+                        ditherDepth={ditherDepth}
+                        ditherIntensity={ditherIntensity}
                       />
                     </div>
                   ) : (
