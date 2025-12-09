@@ -182,6 +182,7 @@ const App = () => {
                 </form>
               </div>
             </div>
+
             {/* Control Card */}
             <div className="card bg-base-200 shadow-xl">
               <div className="card-body p-4">
