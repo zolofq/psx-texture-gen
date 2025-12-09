@@ -18,6 +18,8 @@ const App = () => {
   const [vertexWobble, setVertexWobble] = useState(false);
   const [vertexIntensity, setVertexIntensity] = useState(0.015);
   const [paletteSize, setPaletteSize] = useState(256);
+  const [perspectiveArtifacts, setPerspectiveArtifacts] = useState(false);
+  const [perspectiveIntensity, setPerspectiveIntensity] = useState(0.2);
 
   // Search for images
   const handleSearch = async (e) => {
@@ -116,6 +118,8 @@ const App = () => {
                   setVertexWobble(false);
                   setVertexIntensity(0.015);
                   setPaletteSize(256);
+                  setPerspectiveArtifacts(false);
+                  setPerspectiveIntensity(0.2);
                   toast.success("Settings reset to default PSX preset");
                 }}
                 className="btn btn-sm btn-ghost"
@@ -413,6 +417,24 @@ const App = () => {
                       }
                     }}
                   />
+
+                {/* Perspective Artifacts */}
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm">Perspective Artifacts</span>
+                  <label className="cursor-pointer flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={perspectiveArtifacts}
+                      onChange={(e) => {
+                        setPerspectiveArtifacts(e.target.checked);
+                        if (e.target.checked) {
+                          toast.success("Perspective artifacts enabled");
+                        }
+                      }}
+                      className="toggle toggle-sm toggle-primary"
+                    />
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -481,6 +503,8 @@ const App = () => {
                         vertexWobble={vertexWobble}
                         vertexIntensity={vertexIntensity}
                         paletteSize={paletteSize}
+                        perspectiveArtifacts={perspectiveArtifacts}
+                        perspectiveIntensity={perspectiveIntensity}
                       />
                     </div>
                   ) : (

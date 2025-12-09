@@ -14,6 +14,8 @@ const CanvasImageEffects = ({
   vertexWobble = false,
   vertexIntensity = 0.015,
   paletteSize = 256,
+  perspectiveArtifacts = false,
+  perspectiveIntensity = 0.2,
 }) => {
   const canvasRef = useRef(null);
   const noise2D = createNoise2D();
@@ -59,6 +61,9 @@ const CanvasImageEffects = ({
         applyVertexWobble(ctx, width, height, vertexIntensity);
       }
 
+      // Apply perspective artifacts (lack of perspective correction)
+      if (perspectiveArtifacts && perspectiveIntensity > 0) {
+        applyPerspectiveArtifacts(ctx, width, height, perspectiveIntensity);
       }
 
       // Apply noise on top
@@ -83,6 +88,8 @@ const CanvasImageEffects = ({
     vertexWobble,
     vertexIntensity,
     paletteSize,
+    perspectiveArtifacts,
+    perspectiveIntensity,
   ]);
 
   const calculateDimensions = (img, maxWidth, maxHeight) => {
@@ -268,6 +275,33 @@ const CanvasImageEffects = ({
             }
           }
         }
+      }
+    }
+
+    ctx.putImageData(outputData, 0, 0);
+  };
+
+  const applyPerspectiveArtifacts = (ctx, width, height, intensity = 0.3) => {
+    // Simulate missing perspective correction (affine texture mapping)
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const outputData = ctx.createImageData(width, height);
+
+    for (let y = 0; y < height; y++) {
+      // Scale factor increases with Y (simulating perspective distortion)
+      const perspectiveScale = 1 + (y / height) * intensity;
+
+      for (let x = 0; x < width; x++) {
+        // Apply non-perspective-correct texture sampling
+        const srcX = Math.floor(x * perspectiveScale) % width;
+        const srcY = y;
+        const srcIdx = (srcY * width + srcX) * 4;
+        const dstIdx = (y * width + x) * 4;
+
+        // Copy with perspective distortion
+        outputData.data[dstIdx] = imageData.data[srcIdx];
+        outputData.data[dstIdx + 1] = imageData.data[srcIdx + 1];
+        outputData.data[dstIdx + 2] = imageData.data[srcIdx + 2];
+        outputData.data[dstIdx + 3] = 255;
       }
     }
 
