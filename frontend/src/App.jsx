@@ -21,6 +21,8 @@ const App = () => {
   const [vertexIntensity, setVertexIntensity] = useState(0.015);
   const [paletteSize, setPaletteSize] = useState(256);
   const [texturePageSize, setTexturePageSize] = useState(128);
+  const [subpixelArtifacts, setSubpixelArtifacts] = useState(false);
+  const [subpixelIntensity, setSubpixelIntensity] = useState(0.3);
   const [perspectiveArtifacts, setPerspectiveArtifacts] = useState(false);
   const [perspectiveIntensity, setPerspectiveIntensity] = useState(0.2);
 
@@ -124,6 +126,8 @@ const App = () => {
                   setVertexIntensity(0.015);
                   setPaletteSize(256);
                   setTexturePageSize(128);
+                  setSubpixelArtifacts(false);
+                  setSubpixelIntensity(0.3);
                   setPerspectiveArtifacts(false);
                   setPerspectiveIntensity(0.2);
                   toast.success("Settings reset to default PSX preset");
@@ -500,6 +504,23 @@ const App = () => {
                   </div>
                 </div>
 
+                {/* Subpixel Artifacts */}
+                <div className="flex items-center justify-between mt-4 mb-2">
+                  <span className="text-sm">Subpixel Artifacts</span>
+                  <label className="cursor-pointer flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={subpixelArtifacts}
+                      onChange={(e) => {
+                        setSubpixelArtifacts(e.target.checked);
+                        if (e.target.checked) {
+                          toast.success("Subpixel artifacts enabled");
+                        }
+                      }}
+                      className="toggle toggle-sm toggle-primary"
+                    />
+                  </label>
+                </div>
 
                 {/* Perspective Artifacts */}
                 <div className="flex items-center justify-between mb-2">
@@ -589,6 +610,8 @@ const App = () => {
                         vertexIntensity={vertexIntensity}
                         paletteSize={paletteSize}
                         texturePageSize={texturePageSize}
+                        subpixelArtifacts={subpixelArtifacts}
+                        subpixelIntensity={subpixelIntensity}
                         perspectiveArtifacts={perspectiveArtifacts}
                         perspectiveIntensity={perspectiveIntensity}
                       />

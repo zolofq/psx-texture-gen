@@ -17,6 +17,8 @@ const CanvasImageEffects = ({
   vertexIntensity = 0.015,
   paletteSize = 256,
   texturePageSize = 128,
+  subpixelArtifacts = false,
+  subpixelIntensity = 0.3,
   perspectiveArtifacts = false,
   perspectiveIntensity = 0.2,
 }) => {
@@ -79,6 +81,11 @@ const CanvasImageEffects = ({
         applyRgbShift(ctx, width, height, rgbShiftAmount);
       }
 
+      // Apply subpixel precision artifacts
+      if (subpixelArtifacts && subpixelIntensity > 0) {
+        applySubpixelArtifacts(ctx, width, height, subpixelIntensity);
+      }
+
       // Apply noise on top (subtle analog noise)
       if (noiseScale && noiseScale > 0) {
         applyNoise(ctx, width, height, noiseScale);
@@ -104,6 +111,8 @@ const CanvasImageEffects = ({
     vertexIntensity,
     paletteSize,
     texturePageSize,
+    subpixelArtifacts,
+    subpixelIntensity,
     perspectiveArtifacts,
     perspectiveIntensity,
   ]);
@@ -403,6 +412,23 @@ const CanvasImageEffects = ({
     ctx.putImageData(outputData, 0, 0);
   };
 
+  const applySubpixelArtifacts = (ctx, width, height, intensity = 0.5) => {
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+
+    // Simulate subpixel texture coordinate inaccuracies
+    for (let i = 0; i < data.length; i += 4) {
+      // Random missing pixels (texture sampling artifacts)
+      if (Math.random() < intensity * 0.01) {
+        data[i] = 0; // Black pixel artifacts
+        data[i + 1] = 0;
+        data[i + 2] = 0;
+      }
+
+      // Color bleeding artifacts from subpixel sampling
+      if (Math.random() < intensity * 0.02) {
+        data[i] = Math.min(255, data[i] + 20); // Red boost
+        data[i + 2] = Math.max(0, data[i + 2] - 15); // Blue reduction
       }
     }
 
