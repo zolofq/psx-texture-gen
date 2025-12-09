@@ -11,6 +11,8 @@ const CanvasImageEffects = ({
   ditherDepth = 32,
   ditherIntensity = 1.0,
   ditherType = "bayer", // "bayer" or "psx"
+  vertexWobble = false,
+  vertexIntensity = 0.015,
   paletteSize = 256,
 }) => {
   const canvasRef = useRef(null);
@@ -51,6 +53,12 @@ const CanvasImageEffects = ({
           applyColorDithering(ctx, width, height, ditherDepth, ditherIntensity);
         }
       }
+
+      // Apply vertex wobble (affine texture warping - key PSX effect)
+      if (vertexWobble && vertexIntensity > 0) {
+        applyVertexWobble(ctx, width, height, vertexIntensity);
+      }
+
       }
 
       // Apply noise on top
@@ -72,6 +80,8 @@ const CanvasImageEffects = ({
     ditherDepth,
     ditherIntensity,
     ditherType,
+    vertexWobble,
+    vertexIntensity,
     paletteSize,
   ]);
 
@@ -227,6 +237,43 @@ const CanvasImageEffects = ({
 
     ctx.putImageData(imageData, 0, 0);
   };
+
+  const applyVertexWobble = (ctx, width, height, intensity = 0.01) => {
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const outputData = ctx.createImageData(width, height);
+
+    // Process in quads (2x2 pixel blocks) like PSX rendering
+    for (let y = 0; y < height; y += 2) {
+      for (let x = 0; x < width; x += 2) {
+        // Random vertex displacement (affine warping artifact)
+        const wobbleX = (Math.random() - 0.5) * 2 * intensity;
+        const wobbleY = (Math.random() - 0.5) * 2 * intensity;
+
+        // Apply affine distortion within the quad
+        for (let py = 0; py < 2; py++) {
+          for (let px = 0; px < 2; px++) {
+            const srcX = Math.floor(x + px + wobbleX * px);
+            const srcY = Math.floor(y + py + wobbleY * py);
+
+            // Boundary check
+            if (srcX >= 0 && srcX < width && srcY >= 0 && srcY < height) {
+              const srcIdx = (srcY * width + srcX) * 4;
+              const dstIdx = ((y + py) * width + (x + px)) * 4;
+
+              // Copy pixel with distortion
+              outputData.data[dstIdx] = imageData.data[srcIdx];
+              outputData.data[dstIdx + 1] = imageData.data[srcIdx + 1];
+              outputData.data[dstIdx + 2] = imageData.data[srcIdx + 2];
+              outputData.data[dstIdx + 3] = 255; // Force opaque for PSX style
+            }
+          }
+        }
+      }
+    }
+
+    ctx.putImageData(outputData, 0, 0);
+  };
+
       }
     }
 

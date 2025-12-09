@@ -15,6 +15,8 @@ const App = () => {
   const [ditherDepth, setDitherDepth] = useState(32);
   const [ditherIntensity, setDitherIntensity] = useState(1.0);
   const [ditherType, setDitherType] = useState("bayer");
+  const [vertexWobble, setVertexWobble] = useState(false);
+  const [vertexIntensity, setVertexIntensity] = useState(0.015);
   const [paletteSize, setPaletteSize] = useState(256);
 
   // Search for images
@@ -111,6 +113,8 @@ const App = () => {
                   setPixelSize(10);
                   setDithering(false);
                   setDitherType("bayer");
+                  setVertexWobble(false);
+                  setVertexIntensity(0.015);
                   setPaletteSize(256);
                   toast.success("Settings reset to default PSX preset");
                 }}
@@ -385,6 +389,26 @@ const App = () => {
 
             <div className="card bg-base-200 shadow-xl">
               <div className="card-body p-4">
+                <h2 className="card-title text-base">PSX Effects</h2>
+
+                {/* Vertex Wobble */}
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm">Vertex Wobble</span>
+                  <label className="cursor-pointer flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={vertexWobble}
+                      onChange={(e) => {
+                        setVertexWobble(e.target.checked);
+                        if (e.target.checked) {
+                          toast.success("Affine texture warping enabled");
+                        }
+                      }}
+                      className="toggle toggle-sm toggle-primary"
+                    />
+                  </label>
+                </div>
+
                   <input
                       }
                     }}
@@ -454,6 +478,8 @@ const App = () => {
                         ditherDepth={ditherDepth}
                         ditherIntensity={ditherIntensity}
                         ditherType={ditherType}
+                        vertexWobble={vertexWobble}
+                        vertexIntensity={vertexIntensity}
                         paletteSize={paletteSize}
                       />
                     </div>
