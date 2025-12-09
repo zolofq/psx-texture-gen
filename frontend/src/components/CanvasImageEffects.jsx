@@ -3,13 +3,14 @@ import { createNoise2D } from "simplex-noise";
 
 const CanvasImageEffects = ({
   src,
-  noiseScale = 0.01,
+  noiseScale = 0.005,
   pixelSize,
   maxWidth,
   maxHeight,
   dithering = false,
   ditherDepth = 32,
-  ditherIntensity = 1.0, // 0.0 to 1.0
+  ditherIntensity = 1.0,
+  ditherType = "bayer", // "bayer" or "psx"
 }) => {
   const canvasRef = useRef(null);
   const noise2D = createNoise2D();
@@ -36,9 +37,14 @@ const CanvasImageEffects = ({
         ctx.drawImage(img, 0, 0, width, height);
       }
 
-      // Apply dithering
+      // Apply dithering based on selected type
       if (dithering && ditherDepth > 0) {
-        applyColorDithering(ctx, width, height, ditherDepth, ditherIntensity);
+        if (ditherType === "psx") {
+          applyPsxDithering(ctx, width, height);
+        } else {
+          applyColorDithering(ctx, width, height, ditherDepth, ditherIntensity);
+        }
+      }
       }
 
       // Apply noise on top
@@ -59,6 +65,7 @@ const CanvasImageEffects = ({
     dithering,
     ditherDepth,
     ditherIntensity,
+    ditherType,
   ]);
 
   const calculateDimensions = (img, maxWidth, maxHeight) => {
@@ -147,7 +154,44 @@ const CanvasImageEffects = ({
             Math.min(255, ditheredValue)
           );
         }
-        // Alpha channel remains unchanged
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+  };
+
+  const applyPsxDithering = (ctx, width, height) => {
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+
+    // 2x2 ordered dither matrix (common in PSX games)
+    const psxDitherMatrix = [
+      [0, 2],
+      [3, 1],
+    ];
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const idx = (y * width + x) * 4;
+        const matrixValue = psxDitherMatrix[y % 2][x % 2];
+
+        // Apply PSX-style ordered dithering
+        if (matrixValue === 0) {
+          // Darken in pattern position 0
+          data[idx] = Math.floor(data[idx] / 64) * 64;
+          data[idx + 1] = Math.floor(data[idx + 1] / 64) * 64;
+          data[idx + 2] = Math.floor(data[idx + 2] / 64) * 64;
+        } else if (matrixValue === 3) {
+          // Lighten in pattern position 3
+          data[idx] = Math.ceil(data[idx] / 64) * 64;
+          data[idx + 1] = Math.ceil(data[idx + 1] / 64) * 64;
+          data[idx + 2] = Math.ceil(data[idx + 2] / 64) * 64;
+        }
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+  };
       }
     }
 

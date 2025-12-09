@@ -14,6 +14,7 @@ const App = () => {
   const [dithering, setDithering] = useState(false);
   const [ditherDepth, setDitherDepth] = useState(32);
   const [ditherIntensity, setDitherIntensity] = useState(1.0);
+  const [ditherType, setDitherType] = useState("bayer");
 
   // Search for images
   const handleSearch = async (e) => {
@@ -105,12 +106,11 @@ const App = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => {
-                  setNoiseScale(0.0);
+                  setNoiseScale(0.005);
                   setPixelSize(10);
                   setDithering(false);
-                  toast.success("Settings reset", {
-                    duration: 1500,
-                  });
+                  setDitherType("bayer");
+                  toast.success("Settings reset to default PSX preset");
                 }}
                 className="btn btn-sm btn-ghost"
               >
@@ -200,7 +200,7 @@ const App = () => {
             <div className="card bg-base-200 shadow-xl">
               <div className="card-body p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="card-title text-lg">Dithering</h2>
+                  <h2 className="card-title text-base">Dithering</h2>
                   <label className="cursor-pointer flex items-center gap-2">
                     <input
                       type="checkbox"
@@ -224,6 +224,32 @@ const App = () => {
 
                 {dithering && (
                   <div className="space-y-4 mt-2">
+                    {/* Dither Type Selector */}
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text">Dither Type</span>
+                      </label>
+                      <select
+                        value={ditherType}
+                        onChange={(e) => {
+                          setDitherType(e.target.value);
+                          toast(
+                            `Dither type: ${
+                              e.target.value === "psx"
+                                ? "PSX Ordered"
+                                : "Bayer Matrix"
+                            }`
+                          );
+                        }}
+                        className="select select-bordered select-sm w-full"
+                        disabled={!dithering}
+                      >
+                        <option value="bayer">Bayer Matrix (Standard)</option>
+                        <option value="psx">PSX Ordered (Authentic)</option>
+                      </select>
+                    </div>
+
+                    {/* Color Depth Slider */}
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text">Color Depth</span>
@@ -244,11 +270,12 @@ const App = () => {
                         disabled={!dithering}
                       />
                       <div className="flex justify-between text-xs px-2 mt-1">
-                        <span>1 colors</span>
+                        <span>1 color</span>
                         <span>64 colors</span>
                       </div>
                     </div>
 
+                    {/* Intensity Slider */}
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text">Intensity</span>
@@ -348,6 +375,7 @@ const App = () => {
                         dithering={dithering}
                         ditherDepth={ditherDepth}
                         ditherIntensity={ditherIntensity}
+                        ditherType={ditherType}
                       />
                     </div>
                   ) : (
