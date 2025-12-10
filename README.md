@@ -2,6 +2,7 @@
 ![WIP](https://img.shields.io/badge/Status-Early%20Development-yellow)
 ![No AI](https://img.shields.io/badge/No%20AI-Pure%20Canvas-green)
 ![License](https://img.shields.io/badge/License-MIT-blue)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?style=flat&logo=github&logoColor=white)
 
 > Transform images into authentic PS1-era graphics with hardware-accurate visual effects
 
