@@ -30,29 +30,12 @@ Recreates PlayStation 1 visual style by simulating hardware limitations:
 - **RGB Shift** - Analog video color separation
 - **Texture Artifacts** - VRAM page boundaries
 
-## 🛠️ Tech Stack
-
-- React 19 + Vite
-- Canvas API for image processing
-- Tailwind CSS + DaisyUI
-- Wikimedia Commons API for images
-- simplex-noise for effects
-
 ## 📐 How It Works
 
 Effects are applied in order:
 1. Pixelation → 2. Color reduction → 3. Dithering → 4. Vertex wobble → 5. Perspective warping → 6. Texture pages → 7. RGB shift → 8. Subpixel artifacts → 9. Noise
 
 Each effect simulates a specific PS1 hardware limitation.
-
-## 📂 Structure
-
-```
-src/
-├── components/CanvasImageEffects.jsx  # Image processor (15+ effects)
-├── utils/ImageSearch.js               # Wikimedia API wrapper
-└── App.jsx                            # Main UI + state
-```
 
 ## 🎮 PS1 Hardware Limits
 
@@ -64,15 +47,6 @@ src/
 | 15-bit color depth | Only 32,768 colors |
 | 256x256 texture pages | Visible seams |
 | Composite video output | RGB separation |
-
-## 🔧 Main Effects
-
-**Pixelation** (`pixelSize: 1-100`) - Reduces resolution  
-**Color Palette** (`paletteSize: 2-256`) - Limits colors to 15-bit  
-**Dithering** (`ditherType: "bayer" | "psx"`) - Pattern-based color blending  
-**RGB Shift** (`rgbShiftAmount: 1-30`) - Channel separation  
-**Vertex Wobble** (`vertexIntensity: 0-1`) - Affine texture warping  
-**Texture Pages** (`texturePageSize: 0-512`) - VRAM boundary artifacts
 
 ## 💡 Usage
 
