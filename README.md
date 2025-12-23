@@ -8,7 +8,7 @@
 
 <img width="1919" height="936" alt="image" src="https://github.com/user-attachments/assets/fe353339-3e53-4fc3-8962-33b6472fdf54" />
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 npm install
@@ -17,7 +17,7 @@ npm run dev
 
 Open `http://localhost:5173`
 
-## 🎯 What It Does
+## What It Does
 
 Recreates PlayStation 1 visual style by simulating hardware limitations:
 
@@ -28,32 +28,21 @@ Recreates PlayStation 1 visual style by simulating hardware limitations:
 - **RGB Shift** - Analog video color separation
 - **Texture Artifacts** - VRAM page boundaries
 
-## 📐 How It Works
+## How It Works
 
 Effects are applied in order:
 1. Pixelation → 2. Color reduction → 3. Dithering → 4. Vertex wobble → 5. Perspective warping → 6. Texture pages → 7. RGB shift → 8. Subpixel artifacts → 9. Noise
 
 Each effect simulates a specific PS1 hardware limitation.
 
-## 🎮 PS1 Hardware Limits
-
-| Hardware | Visual Effect |
-|----------|---------------|
-| No perspective correction | Wobbly textures |
-| Integer vertex positions | Pixel snapping |
-| 1MB VRAM | Small textures, limited colors |
-| 15-bit color depth | Only 32,768 colors |
-| 256x256 texture pages | Visible seams |
-| Composite video output | RGB separation |
-
-## 💡 Usage
+## Usage
 
 1. Search for images (Wikimedia Commons)
 2. Select thumbnail
 3. Adjust effects in sidebar
 4. RMB to save
 
-## 📦 Dependencies
+## Dependencies
 
 ```json
 {
@@ -64,6 +53,14 @@ Each effect simulates a specific PS1 hardware limitation.
   "daisyui": "^5.5.5"
 }
 ```
+
+## TODO
+- [ ] add crop feature
+- [ ] add image upload
+- [ ] refactor code
+- [ ] add more search services
+- [ ] make the elements fit on the screen
+
 ---
 <img src="https://media1.tenor.com/m/Lx6ipmgUZwUAAAAC/cold-winter.gif" width="1000" height="300" alt="Demo">
 
